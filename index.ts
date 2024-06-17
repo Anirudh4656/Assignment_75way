@@ -5,7 +5,8 @@ import {initDb} from "./app/services/initDB";
 import bodyParser from "body-parser";
 import * as http from 'http';
 import { IUser } from "./app/schemas/User";
-import userRoutes from "./app/routes/user"
+import userRoutes from "./app/routes/authRoutes";
+import { initPassport } from "./app/services/passport-jwt";
 
 const app:Express=express();
 const router  =express.Router;
@@ -26,7 +27,7 @@ declare global{
 const initApp=async():Promise<void>=>{
    initDb();
   
-  
+  initPassport();
     app.get('/',(req:Request,res:Response)=>{
         res.send({status:"ok"});
     });
