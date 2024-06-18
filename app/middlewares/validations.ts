@@ -9,5 +9,7 @@ export const validate=(validationName:string):any[]=>{
         case "users:create":{
             return create;
         }
+        default:
+             return[];
     }
 }
