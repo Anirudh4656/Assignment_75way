@@ -4,6 +4,7 @@ import expressAsyncHandler from "express-async-handler";
 import { type IUser, UserRole } from "../schemas/User";
 import createHttpError from "http-errors";
 import process from "process";
+
 //check code
 export const roleAuth = (
   roles: UserRole | UserRole[],
@@ -25,6 +26,7 @@ export const roleAuth = (
     //   }
     //   token = token.replace('Bearer ', '');
     //   const token = req.headers["Authorization"]?.replace('Bearer ', '');
+
   const token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyIkX18iOnsiYWN0aXZlUGF0aHMiOnsicGF0aHMiOnsiZW1haWwiOiJpbml0IiwicGFzc3dvcmQiOiJpbml0IiwidXNlcm5hbWUiOiJpbml0Iiwicm9sZSI6ImluaXQiLCJpc0Jsb2NrZWQiOiJpbml0IiwiX2lkIjoiaW5pdCIsIl9fdiI6ImluaXQifSwic3RhdGVzIjp7InJlcXVpcmUiOnt9LCJkZWZhdWx0Ijp7fSwiaW5pdCI6eyJfaWQiOnRydWUsInVzZXJuYW1lIjp0cnVlLCJwYXNzd29yZCI6dHJ1ZSwiZW1haWwiOnRydWUsInJvbGUiOnRydWUsImlzQmxvY2tlZCI6dHJ1ZSwiX192Ijp0cnVlfX19LCJza2lwSWQiOnRydWV9LCIkaXNOZXciOmZhbHNlLCJfZG9jIjp7Il9pZCI6IjY2NzI3NDM5YTcxYjZiZTU5NjZhNTUwNyIsInVzZXJuYW1lIjoiYXNkZXRydHIiLCJwYXNzd29yZCI6IiQyYiQxMiRJM00wSmZKTGMuUk01dzFMUW93djJPd2ZXYmN0NzM3RThyaldqTy95SmQ5TjQxM01KSENMUyIsImVtYWlsIjoiYWlydWRoQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaXNCbG9ja2VkIjpmYWxzZSwiX192IjowfSwiaWF0IjoxNzE4Nzc3MDg0fQ.spQtCwHky2iBS6bBh01pDzGEwLxhL928hWtYOCnZvCs"
       if (!token) {
         throw createHttpError(401, {
@@ -32,10 +34,12 @@ export const roleAuth = (
         });
       }
 
-      const decodedUser = jwt.verify(token!, "dghfghghjghjghjghj"!);
+      const decodedUser = jwt.verify(token!, "dghfghghjghjghjghj"!) as IUser;
       //req.user? 
-    
-      req.user = decodedUser as IUser;
+    // console.log(decodedUser?._doc||"");
+      req.user = decodedUser ;
+
+      // req.userId=decodedUser._id as IUser;
      
     //   const user = req.user as IUser;
     //   if (user.role == null || !Object.values(UserRole).includes(user.role)) {

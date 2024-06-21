@@ -42,6 +42,7 @@ export const closeDiscussion = expressAsyncHandler(async(req: Request, res: Resp
   }
   discussion.isClosed = true;
   await discussion.save();
+  //go through createresponse
   res.send(createResponse({msg: 'Discussion closed' }));
   // res.json({ msg: 'Discussion closed' });
 });

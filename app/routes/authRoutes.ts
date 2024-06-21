@@ -3,17 +3,9 @@ const router=express.Router();
 import { User,type IUser } from '../schemas/User';
 // import {registerUser,loginUser} from "../controller/user";
 import passport from "passport";
-import jwt from 'jsonwebtoken';
-import _ from 'lodash';
-import {  pick } from 'lodash';
-import bcrypt from 'bcrypt';
-import { Request, Response } from 'express';
-import { validate } from "../middlewares/validations";
-import expressAsyncHandler from "express-async-handler";
-import { createUserTokens } from "../services/passport-jwt";
-import { createResponse } from "../helper/response";
-import { loginUser, registerUser,updateUser } from "../controller/user";
 
+import { validate } from "../middlewares/validations";
+import { loginUser, registerUser,updateUser } from "../controller/user";
 // import { catchError, validate } from "../middleware/validation";
 // router.route('/login').post(loginUser);
 // router.route('/Signup').post(registerUser);
@@ -35,8 +27,7 @@ router.post(
 router.post('/signup',registerUser );
 
 router.put(
-  "/:id",
-  passport.authenticate('jwt',{session:false}),updateUser)
+  "/:id",updateUser)
 
       
         // const decodedAccessToken: any = jwtDecode(accessToken);
@@ -47,9 +38,4 @@ router.put(
         //   accessTokenExpiry,
         //   user: req.user1,
         // });
-      
-       
-  
-
-
 export default router;

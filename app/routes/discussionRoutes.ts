@@ -6,7 +6,7 @@ import { createDiscussion, getDiscusssion, getUserDiscusssion, likeDiscussion, r
 
 router.post("/createDiscussion",createDiscussion);
 router.post("/likeDiscussion",likeDiscussion);
-router.post("/replyDiscussion",replyToDiscussion);
+router.post("/replyDiscussion/:id",replyToDiscussion);
 router.get("/getDiscussion",getDiscusssion);
 //why /:id?
 router.get("/getUserDiscussion",getUserDiscusssion);

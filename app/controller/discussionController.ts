@@ -8,6 +8,7 @@ export  const createDiscussion=expressAsyncHandler(async(req:Request,res:Respons
 
 
   const user = req.user as IUser;
+  console.log(user);
   //66727439a71b6be5966a5507
   
 //why user but we need only user.id?
@@ -28,26 +29,38 @@ export const getDiscusssion = expressAsyncHandler(async (req: Request, res: Resp
   const Discusss = await Discuss.find().populate('user', 'username');
   res.json(Discusss);
 });
+//to check
 export const getUserDiscusssion = expressAsyncHandler(async (req: Request, res: Response) => {
-  const user = req.user as IUser;
+  const user = req.user as IUser ;
+  console.log("in get diss")
+  console.log(user);
+  // console.log(`i am user${user}`);
+  // const UserString=JSON.stringify({user});
+  // console.log(UserString);
+  
   // if (!mongoose.Types.ObjectId.isValid(id)) {
   //   return res.status(400).json({ msg: 'Invalid user ID' });
   // }
- console.log(user);
-  // const Discusss = await Discuss.findById({ id});
-  // console.log(Discuss)
+  //id is getting from req.user
+  //declare private
+ const discussions = await Discuss.findById(user._doc._id);
+  console.log(discussions)
   // res.send(createResponse(Discusss));
 });
 
 //
 
 
-  
- 
   export const replyToDiscussion = expressAsyncHandler(async (req: Request, res: Response) => {
     const { content } = req.body;
+    const {id}=req.params;
+    console.log(id);
     const user = req.user as IUser;
-    const reply = new Reply({ content, user: user._id, Discuss: req.params.DiscussId });
+    // const userId=user._doc._id;
+  //when iam  sending user._id not working but sending user it is working
+    console.log(JSON.stringify(user, null, 2));
+  
+    const reply = new Reply({ content, user: user, discussion: id});
     await reply.save();
     res.json(reply);
   });

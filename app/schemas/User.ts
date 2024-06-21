@@ -10,11 +10,13 @@ export enum UserRole {
 
   const Schema=mongoose.Schema;
   export interface IUser extends BaseSchema {
+    _doc: any;
+
     save(): unknown;
     username:string,
     email:string;
     password:string;
-    role:'user'|'admin';
+    role:UserRole;
     isBlocked:boolean;
   }
 
@@ -38,7 +40,7 @@ export enum UserRole {
        username:{type:String,required:true,unique:true},
        password:{type: String, required: true},
        email:{type:String,required:true,unique:true},
-       role:{type:String,enum:['user','admin'],default:'user'},
+       role:{type:String,enum:UserRole,default:UserRole.USER},
        isBlocked:{type:Boolean,default:false}
     }
   )
@@ -57,6 +59,7 @@ export interface IDiscuss extends BaseSchema{
  createdAt: Date,
   updatedAt: Date
 }
+//will go for more optimal solution ,mp
 const DiscussionSchema=new Schema<IDiscuss>(
   {
     title:{type:String,required:true},
