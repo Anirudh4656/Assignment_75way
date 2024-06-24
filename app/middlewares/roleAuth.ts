@@ -19,6 +19,7 @@ export const roleAuth = (
       }
    
     //   let token = req.headers["Authorization"];
+    
     //logic for handling admin portel
     //   // Handle the case where the authorization header might be an array
     //   if (Array.isArray(token)) {

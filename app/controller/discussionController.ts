@@ -5,8 +5,6 @@ import { createResponse } from "../helper/response";
 
 export  const createDiscussion=expressAsyncHandler(async(req:Request,res:Response)=>{
  const {title,content}=req.body;
-
-
   const user = req.user as IUser;
   console.log(user);
   //66727439a71b6be5966a5507
@@ -49,8 +47,6 @@ export const getUserDiscusssion = expressAsyncHandler(async (req: Request, res: 
 });
 
 //
-
-
   export const replyToDiscussion = expressAsyncHandler(async (req: Request, res: Response) => {
     const { content } = req.body;
     const {id}=req.params;

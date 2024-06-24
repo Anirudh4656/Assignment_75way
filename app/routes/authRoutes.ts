@@ -4,7 +4,7 @@ import { User,type IUser } from '../schemas/User';
 // import {registerUser,loginUser} from "../controller/user";
 import passport from "passport";
 
-import { validate } from "../middlewares/validations";
+import { catchError, validate } from "../middlewares/validations";
 import { loginUser, registerUser,updateUser } from "../controller/user";
 // import { catchError, validate } from "../middleware/validation";
 // router.route('/login').post(loginUser);
@@ -21,10 +21,10 @@ import { loginUser, registerUser,updateUser } from "../controller/user";
 router.post(
   "/signin",
   passport.authenticate("login", { session: false }),
-  validate("users:login"),loginUser);
+  validate("users:login"),catchError,loginUser);
 
 
-router.post('/signup',registerUser );
+router.post('/signup',validate("users:create"),catchError,registerUser );
 
 router.put(
   "/:id",updateUser)

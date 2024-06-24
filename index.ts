@@ -37,12 +37,9 @@ const initApp=async():Promise<void>=>{
         res.send({status:"ok"});
     });
     app.use('/api',userRoutes);
-    //public routes to be added
     app.use('/api',roleAuth(UserRole.USER,['/getDiscussion']), discussionRoutes);
-    // app.use('/api', discussionRoutes);
     app.use('/api/admin',roleAuth(UserRole.ADMIN), adminRoutes);
 
-    // router.use("/admin", roleAuth(UserRole.ADMIN, ["/register"]), adminRoutes);
     //error handling
     http.createServer(app).listen(port,()=>{
         console.log("server is running");

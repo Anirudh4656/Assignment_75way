@@ -17,20 +17,19 @@ export const validate=(validationName:string):any[]=>{
     }
 }
 
-//check
-// export const catchError = expressAsyncHandler(
-//     (req: Request, res: Response, next: NextFunction) => {
-//       const errors = validationResult(req);
-//       const isError = errors.isEmpty();
-//       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-//       if (!isError) {
-//         const data = { errors: errors.array() };
-//         throw createHttpError(400, {
-//           message: "Validation error!",
-//           data,
-//         });
-//       } else {
-//         next();
-//       }
-//     }
-//   );
+export const catchError = expressAsyncHandler(
+    (req: Request, res: Response, next: NextFunction) => {
+      const errors = validationResult(req);
+      const isError = errors.isEmpty();
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+      if (!isError) {
+        const data = { errors: errors.array() };
+        throw createHttpError(400, {
+          message: "Validation error!",
+          data,
+        });
+      } else {
+        next();
+      }
+    }
+  );

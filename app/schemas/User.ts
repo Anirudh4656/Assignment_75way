@@ -24,14 +24,14 @@ export enum UserRole {
     username:string,
     email:string;
     password:string;
-    role:'user'|'admin';
+    role:UserRole;
     isBlocked:boolean;
   }
   export interface ILike extends BaseSchema {
     username:string,
     email:string;
     password:string;
-    role:'user'|'admin';
+    role:UserRole;
     isBlocked:boolean;
   }
 //uppercase error 2)userrole passs  ?
