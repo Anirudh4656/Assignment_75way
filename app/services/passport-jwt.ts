@@ -50,6 +50,7 @@ export const initPassport=():void =>{
                     return done(null, false, { message: 'Invalid credentials' });
                   }
                   const {password:_p,...result}=user;
+                  console.log("passport check ") ;
                   done(null,result,{message:"login Successfully"})
                 //   if (user.blocked) {
                 //     done(createError(401, "User is blocked, Contact to admin"), false);
@@ -81,15 +82,24 @@ export const initPassport=():void =>{
 // }
 // (user: Omit<IUser, "password">
 
-export const createUserTokens=(user:{id:string,email:string})=>{
+export const createUserTokens=(user:any)=>{
     const jwtSecret=process.env.JWT_SECRET ?? '';
-    console.log(user);
-    const token =jwt.sign(user,"dghfghghjghjghjghj");
+    console.log("checking user",user);
+    const payload = {
+        email:user.email, 
+        id:user.id ,
+        role:user.role,
+        user:user.username
+    }
+//     console.log("payload ",payload) ;
+    const token =jwt.sign(payload,"dghfghghjghjghjghj",{expiresIn:"1h"});
     return {accessToken:token,refreshToken:""}
 }
 export const decodeToken = (token: string) => {
-    const jwtSecret = process.env.JWT_SECRET ?? "";
     const decode = jwt.decode(token);
+
+
+    
     return decode as IUser;
   };
   

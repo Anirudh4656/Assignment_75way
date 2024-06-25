@@ -11,9 +11,12 @@ export const loginUser= expressAsyncHandler(async (req:any, res, next) => {
         //   new: true,
         // });
         //req.user??
-        console.log("in user token")
+        console.log("in user token",req.user._doc)
+
+        const createToken=createUserTokens(req.user._doc!)
+        console.log("in createToken",createToken);
         res.send(
-          createResponse({ ...createUserTokens(req.user!), user: req.user })
+          createResponse({ ...createToken, user: req.user._doc })
         );
 });
 export const registerUser=expressAsyncHandler(async(req:any, res:any) => {

@@ -40,6 +40,8 @@ export const roleAuth = (
     // console.log(decodedUser?._doc||"");
       req.user = decodedUser ;
 
+      console.log("decode check middleware",req.user);
+
       // req.userId=decodedUser._id as IUser;
      
     //   const user = req.user as IUser;
