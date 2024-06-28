@@ -5,11 +5,11 @@ import expressAsyncHandler from "express-async-handler";
 import { createDiscussion, getDiscusssion, getUserDiscusssion, likeDiscussion, replyToDiscussion } from "../controller/discussionController";
 
 router.post("/createDiscussion",createDiscussion);
-router.post("/likeDiscussion",likeDiscussion);
-router.post("/replyDiscussion/:id",replyToDiscussion);
+router.patch("/likeDiscussion/:id",likeDiscussion);
+router.patch("/replyDiscussion/:id",replyToDiscussion);
 router.get("/getDiscussion",getDiscusssion);
 //why /:id?
-router.get("/getUserDiscussion",getUserDiscusssion);
+router.get("/getUserDiscussion/:id",getUserDiscusssion);
 
 
 export default router;

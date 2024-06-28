@@ -38,7 +38,7 @@ const initApp=async():Promise<void>=>{
     });
     app.use('/api',userRoutes);
     app.use('/api',roleAuth(UserRole.USER,['/getDiscussion']), discussionRoutes);
-    app.use('/api/admin',roleAuth(UserRole.ADMIN), adminRoutes);
+    app.use('/api/admin', adminRoutes);
 
     //error handling
     http.createServer(app).listen(port,()=>{

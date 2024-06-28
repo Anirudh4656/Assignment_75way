@@ -35,8 +35,6 @@ export const getAllUsers = expressAsyncHandler(async (req: Request, res: Respons
 
 export const closeDiscussion = expressAsyncHandler(async(req: Request, res: Response):Promise<void> => {
   const {id}=req.params
-  const dis = await Discuss.find();
-  console.log(dis);
   const discussion = await Discuss.findById(id);
   if (!discussion) {
     throw createHttpError(404, {
@@ -47,6 +45,7 @@ export const closeDiscussion = expressAsyncHandler(async(req: Request, res: Resp
   discussion.isClosed = true;
   await discussion.save();
   //go through createresponse
+  console.log('ff',discussion);
   res.send(createResponse({msg: 'Discussion closed' }));
   // res.json({ msg: 'Discussion closed' });
 });

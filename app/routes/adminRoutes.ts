@@ -4,5 +4,5 @@ const router=express.Router();
 
 router.put('/blockUser/:id',blockUser);
 router.get('/getAllUsers',getAllUsers);
-router.post('/closeDiscussion/:id',closeDiscussion);
+router.patch('/closeDiscussion/:id',closeDiscussion);
 export default router;

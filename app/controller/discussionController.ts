@@ -5,33 +5,57 @@ import { createResponse } from "../helper/response";
 
 export  const createDiscussion=expressAsyncHandler(async(req:Request,res:Response)=>{
  const {title,content}=req.body;
-  const user = req.user as IUser;
-  console.log(user);
+  const {_doc} = req.user as IUser;
+  console.log("in req user",_doc._id);
   //66727439a71b6be5966a5507
   
 //why user but we need only user.id?
- const discuss= new Discuss({title,content,user:user})
- await discuss.save();
- console.log(discuss);
+ const discuss= new Discuss({title,content,user:_doc._id})
+  await discuss.save();
+console.log("in cretae discuss",discuss);
  res.send(createResponse(discuss));
-//  res.json(discuss);
-})
+
+ })
 export const likeDiscussion =expressAsyncHandler(async(req: Request, res: Response) => {
   const user = req.user as IUser;
-  const like = new Like({ user: user._id, Discuss: req.params.DiscussId });
-  await like.save();
+  //name ?
+  const { id } =req.params;
+  console.log(" ",id);
+  const discussion = await Discuss.findById(id)
+  console.log("in. ",discussion);
+  let like
+  if (discussion) {
+    const userLike = discussion.likes.find((like: any) => like.user === user._id);
+   
+    if (userLike) {
+      // Unlike
+      discussion.likes = discussion.likes.filter((like: any) => like.user !== user._id);
+      await Like.findByIdAndDelete(userLike);
+    } else {
+      console.log("inuserlike");
+       like = new Like({ user: user._id, Discuss: req.params.DiscussId });
+      await like.save();
+      discussion.likes.push(like.id);
+    }
+    await discussion.save();
+  }
+
+
   res.send(createResponse(like));
 });
 
 export const getDiscusssion = expressAsyncHandler(async (req: Request, res: Response) => {
-  const Discusss = await Discuss.find().populate('user', 'username');
-  res.json(Discusss);
+  const Discusss = await Discuss.find()
+  //error in .populate
+  res.send(createResponse(Discusss));
+
 });
 //to check
 export const getUserDiscusssion = expressAsyncHandler(async (req: Request, res: Response) => {
-  const user = req.user as IUser ;
-  console.log("in get diss")
-  console.log(user);
+  const {id}=req.params;
+  const Discusss = await Discuss.findById(id)
+  console.log("dd",Discuss);
+  res.send(createResponse(Discusss));
   // console.log(`i am user${user}`);
   // const UserString=JSON.stringify({user});
   // console.log(UserString);
@@ -41,8 +65,7 @@ export const getUserDiscusssion = expressAsyncHandler(async (req: Request, res: 
   // }
   //id is getting from req.user
   //declare private
- const discussions = await Discuss.findById(user._doc._id);
-  console.log(discussions)
+
   // res.send(createResponse(Discusss));
 });
 
@@ -54,11 +77,31 @@ export const getUserDiscusssion = expressAsyncHandler(async (req: Request, res: 
     const user = req.user as IUser;
     // const userId=user._doc._id;
   //when iam  sending user._id not working but sending user it is working
-    console.log(JSON.stringify(user, null, 2));
-  
-    const reply = new Reply({ content, user: user, discussion: id});
+
+    let reply
+  try{
+     reply = new Reply({ content, user: user, discussion: id});
     await reply.save();
-    res.json(reply);
+  
+    const discussion = await Discuss.findById(id);
+    console.log("in reply discussion",discussion)
+    const payload = {
+
+      id:reply._id ,
+      user:reply.user,
+      content:reply.content
+  }
+    if (discussion) {
+      // discussion.replies.push(payload);
+      // await discussion.save();
+    }
+    console.log("in reply after discussion",discussion)
+  }catch(e){
+    console.log(e);
+  }
+   
+
+    res.send(createResponse(reply));
   });
   
   

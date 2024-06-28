@@ -87,11 +87,11 @@ export const createUserTokens=(user:any)=>{
     console.log("checking user",user);
     const payload = {
         email:user.email, 
-        id:user.id ,
+        id:user._id ,
         role:user.role,
         user:user.username
     }
-//     console.log("payload ",payload) ;
+    console.log("payload ",payload) ;
     const token =jwt.sign(payload,"dghfghghjghjghjghj",{expiresIn:"1h"});
     return {accessToken:token,refreshToken:""}
 }
