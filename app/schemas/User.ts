@@ -10,7 +10,8 @@ export enum UserRole {
 
   const Schema=mongoose.Schema;
   export interface IUser extends BaseSchema {
-    _doc: any;
+    id: any;
+  
 
     save(): unknown;
     username:string,
@@ -20,12 +21,11 @@ export enum UserRole {
     isBlocked:boolean;
   }
 
-  export interface IReply extends BaseSchema {
-    username:string,
-    email:string;
-    password:string;
-    role:UserRole;
-    isBlocked:boolean;
+  export interface IReply  {
+  
+    discussion:Types.ObjectId,
+    user:Types.ObjectId,
+    content:string
   }
   export interface ILike extends BaseSchema {
     username:string,
@@ -54,7 +54,7 @@ export interface IDiscuss extends BaseSchema{
  content:string,
  user:Types.ObjectId;
  isClosed:boolean,
- replies:IReply['_id'][],
+ replies:IReply[],
  likes:ILike['_id'][],
  createdAt: Date,
   updatedAt: Date
@@ -77,6 +77,7 @@ const DiscussionSchema=new Schema<IDiscuss>(
 
 const ReplySchema= new Schema({
   content:{type:String,required:true},
+  
   user:{type:Schema.Types.ObjectId,ref:'User',required:true},
   discussion:{type:Schema.Types.ObjectId,ref:'Disscus', required:true},
   createdAt:{type:Date,default:Date.now}

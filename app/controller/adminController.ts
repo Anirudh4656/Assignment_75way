@@ -49,6 +49,13 @@ export const closeDiscussion = expressAsyncHandler(async(req: Request, res: Resp
   res.send(createResponse({msg: 'Discussion closed' }));
   // res.json({ msg: 'Discussion closed' });
 });
+export const deleteUser =expressAsyncHandler(async(req: Request, res: Response):Promise<void> => {
+  const {id}=req.params;
+try{
+  await User.findByIdAndDelete(id);
+  res.send(createResponse({msg: 'User Deleted' })); }catch(e){console.log(e)}
+
+})
 // router.get(
 //   "/all",
 //   passport.authenticate("jwt", {session: false}),

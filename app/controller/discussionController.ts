@@ -1,16 +1,19 @@
 import {Discuss, IUser, Like, Reply} from "../schemas/User";
-import { Request, Response } from 'express';
+import {  NextFunction, Request, Response } from 'express';
 import expressAsyncHandler from "express-async-handler";
 import { createResponse } from "../helper/response";
+import { ObjectId } from 'mongodb';
+import mongoose from "mongoose";
+
 
 export  const createDiscussion=expressAsyncHandler(async(req:Request,res:Response)=>{
  const {title,content}=req.body;
-  const {_doc} = req.user as IUser;
-  console.log("in req user",_doc._id);
-  //66727439a71b6be5966a5507
-  
+  const result = req.user as IUser;
+  console.log("in req user",result);
+
+//667dc51b36a5ed8dcc799819
 //why user but we need only user.id?
- const discuss= new Discuss({title,content,user:_doc._id})
+ const discuss= new Discuss({title,content,user:result.id})
   await discuss.save();
 console.log("in cretae discuss",discuss);
  res.send(createResponse(discuss));
@@ -45,8 +48,10 @@ export const likeDiscussion =expressAsyncHandler(async(req: Request, res: Respon
 });
 
 export const getDiscusssion = expressAsyncHandler(async (req: Request, res: Response) => {
-  const Discusss = await Discuss.find()
+  const Discusss = await Discuss.find().populate('replies');
+
   //error in .populate
+  console.log("in dicuss",Discusss);
   res.send(createResponse(Discusss));
 
 });
@@ -70,38 +75,56 @@ export const getUserDiscusssion = expressAsyncHandler(async (req: Request, res: 
 });
 
 //
-  export const replyToDiscussion = expressAsyncHandler(async (req: Request, res: Response) => {
+  export const replyToDiscussion = expressAsyncHandler(async (req: Request, res: Response,next:NextFunction) => {
     const { content } = req.body;
-    const {id}=req.params;
+    const { id }=req.params;
     console.log(id);
     const user = req.user as IUser;
     // const userId=user._doc._id;
   //when iam  sending user._id not working but sending user it is working
-
-    let reply
-  try{
-     reply = new Reply({ content, user: user, discussion: id});
-    await reply.save();
-  
-    const discussion = await Discuss.findById(id);
-    console.log("in reply discussion",discussion)
-    const payload = {
-
-      id:reply._id ,
-      user:reply.user,
-      content:reply.content
+  console.log("in id",id);
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(createHttpError(400, 'Invalid discussion ID format'));
   }
-    if (discussion) {
-      // discussion.replies.push(payload);
-      // await discussion.save();
-    }
-    console.log("in reply after discussion",discussion)
+  const userId = new ObjectId(id);
+  console.log("in userid",user.username,);
+   
+  try{
+    
+    const discussion = await Discuss.findById(id);
+   
+if(discussion){
+  const  reply = new Reply({ content, user: user.id, discussion:userId });  
+  await reply.save();
+console.log("newreply:",reply);
+
+  
+ 
+//   const payload = {
+
+//     id:reply._id ,
+//     user:reply.user,
+//     content:reply.content
+// }
+// console.log("payload:",payload);
+  if (discussion) {
+    discussion.replies.push(reply);
+    await discussion.save();
+  }
+  console.log("in reply after discussion",discussion)
+  res.send(createResponse(reply));
+}
+   
   }catch(e){
     console.log(e);
   }
    
 
-    res.send(createResponse(reply));
+ 
   });
   
+
+function createHttpError(arg0: number, arg1: string) {
+  throw new Error("Function not implemented.");
+}
   
