@@ -10,9 +10,7 @@ export enum UserRole {
 
   const Schema=mongoose.Schema;
   export interface IUser extends BaseSchema {
-    id: any;
-  
-
+    id: string;
     save(): unknown;
     username:string,
     email:string;
@@ -22,17 +20,13 @@ export enum UserRole {
   }
 
   export interface IReply  {
-  
     discussion:Types.ObjectId,
     user:Types.ObjectId,
     content:string
   }
-  export interface ILike extends BaseSchema {
-    username:string,
-    email:string;
-    password:string;
-    role:UserRole;
-    isBlocked:boolean;
+  export interface ILike  {
+    user:Types.ObjectId,
+    discussion:Types.ObjectId,
   }
 //uppercase error 2)userrole passs  ?
   const UserSchema=new Schema<IUser>(
@@ -55,7 +49,7 @@ export interface IDiscuss extends BaseSchema{
  user:Types.ObjectId;
  isClosed:boolean,
  replies:IReply[],
- likes:ILike['_id'][],
+ likes:ILike[],
  createdAt: Date,
   updatedAt: Date
 }
@@ -69,7 +63,7 @@ const DiscussionSchema=new Schema<IDiscuss>(
     updatedAt:{type:Date,Default:Date.now},
     isClosed:{type:Boolean,default:false},
     replies:[{type:Schema.Types.ObjectId,ref:'Reply'}],
-    likes:[{type:Schema.Types.ObjectId,ref:'Likes'}],
+    likes:[{type:Schema.Types.ObjectId,ref:'Like'}],
 
     
   }
@@ -79,13 +73,13 @@ const ReplySchema= new Schema({
   content:{type:String,required:true},
   
   user:{type:Schema.Types.ObjectId,ref:'User',required:true},
-  discussion:{type:Schema.Types.ObjectId,ref:'Disscus', required:true},
+  discussion:{type:Schema.Types.ObjectId,ref:'Discuss', required:true},
   createdAt:{type:Date,default:Date.now}
 
 })
 //like Schema
 
-const LikeSchema=new Schema({
+const LikeSchema=new Schema<ILike >({
   user:{type:Schema.Types.ObjectId,ref:'User'},
   discussion:{type:Schema.Types.ObjectId,ref:'Discuss'}
 })

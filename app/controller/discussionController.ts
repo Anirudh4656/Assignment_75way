@@ -22,33 +22,44 @@ console.log("in cretae discuss",discuss);
 export const likeDiscussion =expressAsyncHandler(async(req: Request, res: Response) => {
   const user = req.user as IUser;
   //name ?
+  console.log("in user.id",user.id);
   const { id } =req.params;
+  const userId = new ObjectId(id);
   console.log(" ",id);
-  const discussion = await Discuss.findById(id)
-  console.log("in. ",discussion);
-  let like
-  if (discussion) {
-    const userLike = discussion.likes.find((like: any) => like.user === user._id);
-   
-    if (userLike) {
-      // Unlike
-      discussion.likes = discussion.likes.filter((like: any) => like.user !== user._id);
-      await Like.findByIdAndDelete(userLike);
-    } else {
-      console.log("inuserlike");
-       like = new Like({ user: user._id, Discuss: req.params.DiscussId });
-      await like.save();
-      discussion.likes.push(like.id);
-    }
-    await discussion.save();
+  try{
+    const discussion = await Discuss.findById(id)
+    console.log("in. ",discussion);
+    let like
+    if (discussion) {
+      const userLike = discussion.likes.find((like: any) => like.user === user.id);
+      console.log('like found or not',userLike);
+     
+      if(userLike) {                                         
+        // Unlike
+        console.log("inuser unlike");
+        discussion.likes = discussion.likes.filter((like: any) => like.user !== user.id);
+        await Like.findByIdAndDelete(userLike);
+      } else {
+        console.log("inuserlike");
+         like = new Like({ user:user.id, Discussion:userId });
+        await like.save();
+        console.log("inn c l",like);
+        discussion.likes.push(like);
+        console.log("in after discussion. ",discussion);
+      }
+      await discussion.save();
+      res.send(createResponse(like))  
+  } 
+  
+  }catch(error){
+    console.log(error);
   }
 
-
-  res.send(createResponse(like));
+  ;
 });
 
 export const getDiscusssion = expressAsyncHandler(async (req: Request, res: Response) => {
-  const Discusss = await Discuss.find().populate('replies');
+  const Discusss = await Discuss.find().populate('replies').populate('likes');
 
   //error in .populate
   console.log("in dicuss",Discusss);

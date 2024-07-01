@@ -20,7 +20,7 @@ export const blockUser = expressAsyncHandler(async(req: Request, res: Response) 
     });
     
   }
-  user.isBlocked = true;
+  user.isBlocked = !user.isBlocked;
   user.role=UserRole.USER;
   await user.save();
   console.log(user);
@@ -29,7 +29,7 @@ export const blockUser = expressAsyncHandler(async(req: Request, res: Response) 
 export const getAllUsers = expressAsyncHandler(async (req: Request, res: Response) => {
   const users = await User.find();
   console.log(users);
-  res.json(users);
+  res.send(createResponse(users));
 });
 
 
@@ -42,6 +42,7 @@ export const closeDiscussion = expressAsyncHandler(async(req: Request, res: Resp
     });
      
   }
+  
   discussion.isClosed = true;
   await discussion.save();
   //go through createresponse
@@ -51,6 +52,7 @@ export const closeDiscussion = expressAsyncHandler(async(req: Request, res: Resp
 });
 export const deleteUser =expressAsyncHandler(async(req: Request, res: Response):Promise<void> => {
   const {id}=req.params;
+  console.log("in deleteuser",id)
 try{
   await User.findByIdAndDelete(id);
   res.send(createResponse({msg: 'User Deleted' })); }catch(e){console.log(e)}

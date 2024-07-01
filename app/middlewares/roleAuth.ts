@@ -14,10 +14,11 @@ export const roleAuth = (
     async (req: Request, res: Response, next: NextFunction) => {
       if (publicRoutes.includes(req.path)) {
         next();
-      console.log("in public");
+      // console.log("in public");
         return;
       }
    //?
+   console.log("why admin");
       let token = req.headers['authorization']?.replace('Bearer ', '');;
     // console.log("authorization token",token1);
     //logic for handling admin portel
@@ -34,6 +35,7 @@ export const roleAuth = (
           message: `Invalid token`,
         });
       }
+      console.log("in verified",token);
 
       const decodedUser = jwt.verify(token!, "dghfghghjghjghjghj"!) as IUser;
       //req.user? 
