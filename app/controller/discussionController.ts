@@ -4,6 +4,7 @@ import expressAsyncHandler from "express-async-handler";
 import { createResponse } from "../helper/response";
 import { ObjectId } from 'mongodb';
 import mongoose from "mongoose";
+import { selectClasses } from "@mui/material";
 
 
 export  const createDiscussion=expressAsyncHandler(async(req:Request,res:Response)=>{
@@ -19,7 +20,7 @@ console.log("in cretae discuss",discuss);
  res.send(createResponse(discuss));
 
  })
-export const likeDiscussion =expressAsyncHandler(async(req: Request, res: Response) => {
+export const likeDiscussion =expressAsyncHandler( async(req: Request, res: Response) => {
   const user = req.user as IUser;
   //name ?
   console.log("in user.id",user.id);
@@ -27,27 +28,39 @@ export const likeDiscussion =expressAsyncHandler(async(req: Request, res: Respon
   const userId = new ObjectId(id);
   console.log(" ",id);
   try{
-    const discussion = await Discuss.findById(id)
+  
+    const discussion = await Discuss.findById(id).populate({
+      path: 'likes',
+    });
+
     console.log("in. ",discussion);
+    // if (!discussion) {
+    //   return res.status(404).json({ message: 'Discussion not found' });
+    // }
     let like
     if (discussion) {
-      const userLike = discussion.likes.find((like: any) => like.user === user.id);
-      console.log('like found or not',userLike);
+      //6682786733a502194736ae63
+      const userLike=  discussion.likes.find((like: any) => like.user.equals("6682786733a502194736ae63") );
      
-      if(userLike) {                                         
+      console.log('like found or not',userLike);
+    
+      if(userLike){                                         
         // Unlike
         console.log("inuser unlike");
-        discussion.likes = discussion.likes.filter((like: any) => like.user !== user.id);
+        discussion.likes = discussion.likes.filter((like: any) => !like.user.equals(user.id));
         await Like.findByIdAndDelete(userLike);
+        console.log("inuser unlike success");
       } else {
         console.log("inuserlike");
-         like = new Like({ user:user.id, Discussion:userId });
+         like = new Like({ user:user.id, Discussion:id });
         await like.save();
         console.log("inn c l",like);
         discussion.likes.push(like);
         console.log("in after discussion. ",discussion);
       }
+      
       await discussion.save();
+      console.log("in backend of like",like);
       res.send(createResponse(like))  
   } 
   
@@ -59,7 +72,7 @@ export const likeDiscussion =expressAsyncHandler(async(req: Request, res: Respon
 });
 
 export const getDiscusssion = expressAsyncHandler(async (req: Request, res: Response) => {
-  const Discusss = await Discuss.find().populate('replies').populate('likes');
+  const Discusss = await Discuss.find().sort({_id:-1}).populate('replies').populate('likes');
 
   //error in .populate
   console.log("in dicuss",Discusss);
@@ -72,17 +85,7 @@ export const getUserDiscusssion = expressAsyncHandler(async (req: Request, res: 
   const Discusss = await Discuss.findById(id)
   console.log("dd",Discuss);
   res.send(createResponse(Discusss));
-  // console.log(`i am user${user}`);
-  // const UserString=JSON.stringify({user});
-  // console.log(UserString);
-  
-  // if (!mongoose.Types.ObjectId.isValid(id)) {
-  //   return res.status(400).json({ msg: 'Invalid user ID' });
-  // }
-  //id is getting from req.user
-  //declare private
 
-  // res.send(createResponse(Discusss));
 });
 
 //
@@ -109,15 +112,7 @@ if(discussion){
   await reply.save();
 console.log("newreply:",reply);
 
-  
- 
-//   const payload = {
 
-//     id:reply._id ,
-//     user:reply.user,
-//     content:reply.content
-// }
-// console.log("payload:",payload);
   if (discussion) {
     discussion.replies.push(reply);
     await discussion.save();

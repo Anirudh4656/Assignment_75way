@@ -20,7 +20,13 @@ export const blockUser = expressAsyncHandler(async(req: Request, res: Response) 
     });
     
   }
-  user.isBlocked = !user.isBlocked;
+  console.log(user.isBlocked)
+  if(user.isBlocked == true){
+    user.isBlocked = false;
+  }
+  else{
+    user.isBlocked = true;
+  }
   user.role=UserRole.USER;
   await user.save();
   console.log(user);
@@ -29,7 +35,7 @@ export const blockUser = expressAsyncHandler(async(req: Request, res: Response) 
 export const getAllUsers = expressAsyncHandler(async (req: Request, res: Response) => {
   const users = await User.find();
   console.log(users);
-  res.send(createResponse(users));
+  res.json(users);
 });
 
 
@@ -42,7 +48,6 @@ export const closeDiscussion = expressAsyncHandler(async(req: Request, res: Resp
     });
      
   }
-  
   discussion.isClosed = true;
   await discussion.save();
   //go through createresponse
@@ -52,19 +57,8 @@ export const closeDiscussion = expressAsyncHandler(async(req: Request, res: Resp
 });
 export const deleteUser =expressAsyncHandler(async(req: Request, res: Response):Promise<void> => {
   const {id}=req.params;
-  console.log("in deleteuser",id)
 try{
   await User.findByIdAndDelete(id);
   res.send(createResponse({msg: 'User Deleted' })); }catch(e){console.log(e)}
 
 })
-// router.get(
-//   "/all",
-//   passport.authenticate("jwt", {session: false}),
-//   catchError,
-//   expressAsyncHandler(async(req, res)=> {
-//     const users = await User.find();
-//     res.json(users);
-//     //res.send(createResponse(users, "All users retrieved"));
-//   })
-// );
