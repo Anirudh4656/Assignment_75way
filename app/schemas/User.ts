@@ -23,7 +23,7 @@ export enum UserRole {
     id: any;
     discussion:Types.ObjectId,
     user:Types.ObjectId,
-    username:string,
+    name:string,
     content:string,
 
   }
@@ -33,10 +33,11 @@ export enum UserRole {
    
   }
   export interface IReply{
+    save(): unknown;
     id: any;
     discussion:Types.ObjectId,
     user:Types.ObjectId,
-    username:string,
+    name:string,
     content:string,
     replies:Reply[],
     likes:Like[]
@@ -63,7 +64,8 @@ export interface IDiscuss extends BaseSchema{
  user:Types.ObjectId;
  isClosed:boolean,
  replies:IReply[],
- likes:ILike[]
+ likes:ILike[],
+ name:string
 
 }
 //will go for more optimal solution ,mp
@@ -72,6 +74,7 @@ const DiscussionSchema=new Schema<IDiscuss>(
     title:{type:String,required:true},
     content:{type:String,required:true},
     user:{type:Schema.Types.ObjectId, ref: 'User', required: true },
+    name:{type:String},
     createdAt:{type:Date,Default:Date.now},
     updatedAt:{type:Date,Default:Date.now},
     isClosed:{type:Boolean,default:false},
@@ -87,7 +90,7 @@ const ReplySchema= new Schema<IReply>({
   replies: [{ type: Schema.Types.ObjectId, ref: 'Reply' }],
   user:{type:Schema.Types.ObjectId,ref:'User',required:true},
   discussion:{type:Schema.Types.ObjectId,ref:'Discuss', required:true},
-  username:{type:String},
+  name:{type:String},
   likes:[{ type: Schema.Types.ObjectId, ref: 'Like' }]
 
 })

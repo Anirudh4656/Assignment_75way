@@ -14,7 +14,7 @@ export const createDiscussion = expressAsyncHandler(
 
     //667dc51b36a5ed8dcc799819
     //why user but we need only user.id?
-    const discuss = new Discuss({ title, content, user: result.id });
+    const discuss = new Discuss({ title, content, user: result.id,name:result.user });
     await discuss.save();
     console.log("in cretae discuss", discuss);
     res.send(createResponse(discuss));
@@ -77,8 +77,16 @@ export const getDiscusssion = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const Discusss = await Discuss.find()
       .sort({ _id: -1 })
-      .populate("replies")
-      .populate("likes");
+      .populate("likes")
+      .populate({
+        path: 'replies',
+        populate: {
+          path: 'replies', // Populate nested replies within replies
+          populate: {
+            path: 'replies', // Continue nesting as needed
+          },
+        },
+      })
 
     //error in .populate
     console.log("in dicuss", Discusss);
@@ -119,7 +127,7 @@ export const replyToDiscussion = expressAsyncHandler(
           content,
           user: user.id,
           discussion: userId,
-          username: user.username,
+          name: user.user,
         });
         await reply.save();
         console.log("newreply:", reply);
@@ -139,8 +147,9 @@ export const replyToDiscussion = expressAsyncHandler(
 export const nestedReply = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const user = req.user as IUser;
-    console.log("in nested comments", user.user);
-    const { discussionId, parentReplyId, content } = req.body;
+    // console.log("in nested comments", user.user);
+    const { discussionId, replyId, content } = req.body;
+    console.log("discussionId:",discussionId,"parentReplyID:",replyId,"content:",content)
     try {
       const discussion = await Discuss.findById(discussionId);
       if (discussion) {
@@ -148,19 +157,23 @@ export const nestedReply = expressAsyncHandler(
           content,
           user: user.id,
           discussion: discussionId,
-          username: user.user,
+          name: user.user,
         });
-        console.log("in nested reply", nestedReply);
+        console.log("in nested reply", nestedReply)
         await nestedReply.save();
-        // const parentreply=discussion?.replies.find((reply:any)=>reply.id ===parentReplyId);
-        const parentReply = await Reply.findById(parentReplyId);
+        // const parentreply=discussion?.replies.find((reply:any)=>reply.id ===replyId);
+        const parentReply = await Reply.findById(replyId).populate('replies');
         if (parentReply) {
           console.log("Parent reply is:", parentReply);
           parentReply.replies.push(nestedReply);
           await parentReply.save();
+          await parentReply.populate({
+            path: 'replies',
+          })
+         
         }
         console.log("Parent reply after is:", parentReply);
-        res.send(createResponse(parentReply));
+        res.send(createResponse(nestedReply));
       }
     
     } catch (e) {
