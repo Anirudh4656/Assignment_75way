@@ -77,16 +77,35 @@ export const getDiscusssion = expressAsyncHandler(
   async (req: Request, res: Response) => {
     const Discusss = await Discuss.find()
       .sort({ _id: -1 })
-      .populate("likes")
+      .populate({
+        path:'likes'
+      })
       .populate({
         path: 'replies',
-        populate: {
-          path: 'replies', // Populate nested replies within replies
-          populate: {
-            path: 'replies', // Continue nesting as needed
+        populate: [
+          {
+            path: 'replies',
+            populate: [
+              {
+                path: 'replies',
+                populate: {
+                  path: 'likes',
+                
+                },
+              },
+              {
+                path: 'likes',
+               
+              },
+            ],
           },
-        },
+          {
+            path: 'likes',
+          
+          },
+        ],
       })
+    
 
     //error in .populate
     console.log("in dicuss", Discusss);
@@ -181,15 +200,16 @@ export const nestedReply = expressAsyncHandler(
     }
   }
 );
-
-export const LikeComment = async (req: Request, res: Response) => {
+export const replyLike = async (req: Request, res: Response) => {
   const user = req.user as IUser;
   const { id } = req.params;
-
+  // const id="6684eb95de93c2f0fbe097e7"
+  //reply id
+let newLike;
   // const replyId = "6683a271b5785ce930501a1c";
   try {
     const reply = await Reply.findById(id);
-    console.log("reply",reply);
+    // console.log("reply",reply);
 
     const existingLike = await Like.findOne({ user: user.id, reply: id});
     console.log("existingLike",existingLike);
@@ -199,19 +219,29 @@ export const LikeComment = async (req: Request, res: Response) => {
         (like) => !like.equals(existingLike._id)
       );
     } else {
-      const newLike = new Like({ user: user.id, reply: id });
+       newLike = new Like({ user: user.id, reply: id });
       await newLike.save();
-      console.log("new like", newLike);
+      // console.log("new like", newLike);
       reply?.likes.push(newLike);
      
       await reply?.save();
     }
-    console.log("in reply after pushing data",reply)
-    res.send(createResponse(reply));
+    await Discuss.findOneAndUpdate(
+      { "replies._id": id },
+      { $set: { "replies.$": reply } },
+      { new: true }
+    );
+    if(reply){
+      console.log("in likereply after pushing data",reply.likes)
+   
+      res.send(createResponse(newLike));
+    }
+   
   } catch (e) {
     console.log(e);
   }
 };
+
 function createHttpError(arg0: number, arg1: string) {
   throw new Error("Function not implemented.");
 }
