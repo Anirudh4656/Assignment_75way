@@ -3,6 +3,7 @@ import { User, type IUser } from '../schemas/User';
 import bcrypt from "bcrypt";
 import { Strategy, ExtractJwt } from "passport-jwt";
 import passport from "passport";
+import createError from "http-errors";
 import { Strategy as LocalStrategy} from 'passport-local';
 
 const isValidPassword=async function(value:string,password:string){
@@ -39,25 +40,24 @@ export const initPassport=():void =>{
                 const user:IUser |null =await User.findOne({email});
                 console.log(`I AM IN USER ${user}`);
                 if(!user){
-                    return done(null,false,{message:'no user'})
+                    done(createError(401, "User not found!"), false);
+                    return
                 }
                 if(user.isBlocked){
-                    return done(null,false,{message:'denied'})
+                    done(createError(401, "User is blocked, Contact to admin"), false);
+                    return 
                 }
                 const validate=await isValidPassword(password,user.password)
                
                 if (!validate) {
-                    return done(null, false, { message: 'Invalid credentials' });
+                    done(createError(401, "Invalid email or password"), false);
+                    return;
                   }
                   const {password:_p,...result}=user;
                   console.log("passport check ") ;
-                  done(null,result,{message:"login Successfully"})
-                //   if (user.blocked) {
-                //     done(createError(401, "User is blocked, Contact to admin"), false);
-                //     return;
-                //   }
-             
-                
+                  done(null, result, { message: "Logged in Successfully" });
+
+            
             }catch(error){
                 return done(error);
             }
@@ -97,9 +97,6 @@ export const createUserTokens=(user:any)=>{
 }
 export const decodeToken = (token: string) => {
     const decode = jwt.decode(token);
-
-
-    
     return decode as IUser;
   };
   

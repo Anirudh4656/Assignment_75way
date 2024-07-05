@@ -5,7 +5,7 @@ import { createUserTokens } from "../services/passport-jwt";
 
 //validate
 
-export const loginUser= expressAsyncHandler(async (req:any, res, next) => {
+export const loginUser= (async (req:any, res:any) => {
       
         console.log("in user token",req.user._doc)
 
@@ -15,7 +15,7 @@ export const loginUser= expressAsyncHandler(async (req:any, res, next) => {
           createResponse({ ...createToken, user: req.user._doc })
         );
 });
-export const registerUser=expressAsyncHandler(async(req:any, res:any) => {
+export const registerUser=(async(req:any, res:any) => {
     const { username,email, password } = req.body as IUser;
     const duplicateUser = await User.findOne({ email });
 

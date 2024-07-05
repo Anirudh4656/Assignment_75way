@@ -4,14 +4,14 @@ const router=express.Router();
 import expressAsyncHandler from "express-async-handler";
 import { replyLike ,createDiscussion, getDiscusssion, getUserDiscusssion, likeDiscussion, nestedReply, replyToDiscussion } from "../controller/discussionController";
 
-router.post("/createDiscussion",createDiscussion);
-router.patch("/likeDiscussion/:id",likeDiscussion);
-router.patch("/replyDiscussion/:id",replyToDiscussion);
-router.get("/getDiscussion",getDiscusssion);
+router.post("/discussions",expressAsyncHandler(createDiscussion));
+router.patch("/discussions/:id/like",expressAsyncHandler(likeDiscussion));
+router.patch("/discussions/:id/reply",expressAsyncHandler(replyToDiscussion));
+router.get("/discussions",expressAsyncHandler(getDiscusssion));
 //why /:id?
-router.get("/getUserDiscussion/:id",getUserDiscusssion);
-router.patch("/nestedReply",nestedReply);
-router.patch("/likeReply/:id",replyLike );
+router.get("/user/:id/discussions",expressAsyncHandler(getUserDiscusssion));
+router.patch("/discussions/:discussionId/replies/:replyId/reply",expressAsyncHandler(nestedReply));
+router.patch("/discussions/replies/:replyId/like",expressAsyncHandler(replyLike));
 
 
 export default router;

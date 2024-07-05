@@ -6,6 +6,7 @@ import passport from "passport";
 
 import { catchError, validate } from "../middlewares/validations";
 import { loginUser, registerUser,updateUser } from "../controller/user";
+import expressAsyncHandler from "express-async-handler";
 // import { catchError, validate } from "../middleware/validation";
 // router.route('/login').post(loginUser);
 // router.route('/Signup').post(registerUser);
@@ -21,10 +22,10 @@ import { loginUser, registerUser,updateUser } from "../controller/user";
 router.post(
   "/signin",
   passport.authenticate("login", { session: false }),
-  validate("users:login"),catchError,loginUser);
+  validate("users:login"),catchError,expressAsyncHandler(loginUser));
 
 
-router.post('/signup',validate("users:create"),catchError,registerUser );
+router.post('/signup',validate("users:create"),catchError,expressAsyncHandler(registerUser) );
 
 router.put(
   "/:id",updateUser)
